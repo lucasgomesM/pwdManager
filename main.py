@@ -32,8 +32,8 @@ class PwdManager(App):
                 )
             grid.add_widget(lbl)
             grid.height += 20
-            grid.rows += 1        
-            grid.ids[str(grid.rows-1)] = lbl
+            grid.ids[str(grid.rows)] = lbl
+            grid.rows += 1            
             self.button_maker(grid, scManager)         
             pwd.text = ''
             app.text = ''
@@ -45,39 +45,44 @@ class PwdManager(App):
 
     def populate(self, grid,scManager):
         self.cur.execute("SELECT pwd, app FROM pwd")
-        listaAux = self.cur.fetchall()  
-        for i in range(len(listaAux)):     
+        self.listaAux = self.cur.fetchall()  
+        for i in range(len(self.listaAux)):     
             lbl = Label(
                 font_size = 15,
-                text = "{}, no app {}".format(listaAux[i][0], listaAux[i][1]),size_hint_y = None, height = 30
+                text = "{}, no app {}".format(self.listaAux[i][0], self.listaAux[i][1]),size_hint_y = None, height = 30
             )      
             grid.add_widget(lbl)
             grid.ids[str(i)] = lbl
             self.button_maker(grid,scManager,n=i)
             grid.height = i*20
-        return len(listaAux)      
+        return len(self.listaAux)      
 
     def search(self, searchTxt, grid, scManager):
         if searchTxt.text != "":
             self.cur.execute("SELECT pwd, app FROM pwd WHERE app like (?)", ("%" + searchTxt.text + "%",))
             listaAux = self.cur.fetchall() 
             grid.clear_widgets()
+            grid.rows =0
+            grid.ids = {}
             for i in range(len(listaAux)):     
                 lbl = Label(
                     font_size = 15,
                     text = "{}, no app {}".format(listaAux[i][0], listaAux[i][1]),size_hint_y = None, height = 30
                 )    
+                grid.rows += 1
                 grid.add_widget(lbl)
                 grid.ids[str(i)] = lbl
                 self.button_maker(grid, scManager)    
                 grid.height = i*20
     
-        else:
-            print(grid.rows)
-            if grid.rows <= 0:
+        else:         
+
+            if len(grid.ids) == 0:
+                grid.rows = len(self.listaAux)
                 self.populate(grid, scManager)
             else:
-                pass
+                grid.ids = {}
+                grid.clear_widgets()
 
     def decrypt(self,login,scManager):
         #temporary, just to get the login idea somewhat done
@@ -100,8 +105,7 @@ class PwdManager(App):
     def editScreen(self, grid, btn, scManager):
         scManager.current = 'edit_Screen'
         #grid.ids[btn.text] acessa diretamente a label, portanto posso usar pra deletar no BD
-        #por algum motivo, depois de criar o botão, o id dele é +1 do do que deveria ser (???)
-        print((grid.ids[btn.text]).text)
+     
         self.lblToEdit = (grid.ids[btn.text])
         self.btnToEdit = btn
     
@@ -118,8 +122,6 @@ class PwdManager(App):
 
     def delete(self,grid, scManager):
         lblTextAux = self.lblToEdit.text.split(", no app ")    
-        print(lblTextAux[0])
-        print(lblTextAux[1])   
         grid.remove_widget(self.lblToEdit)
         grid.remove_widget(self.btnToEdit)        
         self.dbManager.execute("DELETE FROM pwd WHERE pwd = ? AND app = ?", (lblTextAux[0], lblTextAux[1]))
@@ -127,7 +129,6 @@ class PwdManager(App):
         self.btnToEdit = None
         self.lblToEdit = None
         scManager.current = 'main_Screen'
-
     
 
 
