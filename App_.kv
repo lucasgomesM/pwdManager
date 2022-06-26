@@ -1,0 +1,133 @@
+
+<App_>:
+    id: scManager
+    Screen:
+        name: 'main_Screen'
+        canvas.before:
+            Color:
+                rgba: (0.2,0.15,0.45,1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        ScrollView:   
+            BoxLayout:         
+                orientation: 'vertical'            
+                spacing: 50
+                padding: 20
+                size_hint_y: None
+                height: self.minimum_height 
+                Label:
+                    id: searchLbl
+                    font_size: 20
+                    size_hint_y: None
+                    height: 10
+                    text: "Pesquisar:"
+                TextInput:
+                    id: searchTxt           
+                    size_hint_y: None    
+                    size_hint_x: .8
+                    pos_hint: {'x' : 0.1}
+                    width: 1000
+                    height: 50
+                Label:
+                    id: appLbl
+                    font_size: 20
+                    size_hint_y: None
+                    height: 10
+                    text: "Nome do app/site:"
+                TextInput:
+                    id: appTxt           
+                    size_hint_y: None    
+                    size_hint_x: .8
+                    pos_hint: {'x' : 0.1}
+                    width: 1000
+                    height: 50
+                Label:
+                    id: pwdLbl
+                    font_size: 20
+                    size_hint_y: None
+                    height: 10
+                    text: "Senha:"
+                TextInput:
+                    id: pwdTxt   
+                    #password: True        
+                    size_hint_y: None    
+                    size_hint_x: .8
+                    pos_hint: {'x' : 0.1}
+                    width: 1000
+                    height: 50
+                BoxLayout:
+                    size_hint_y: None
+                    height: 100
+                    size_hint_x: None
+                    pos_hint: {'center_x': .40}
+                    width: 150  
+                    Button:
+                        border: 0,0,0,0
+                        text: 'Salvar'
+                        size_hint_y: None
+                        size_hint_x: None                    
+                        width: 150       
+                        height: 80
+                        on_release: app.connect(pwdTxt, appTxt, grid, scManager)
+                    Button:
+                        border: 0,0,0,0
+                        text: 'Pesquisar'
+                        size_hint_y: None
+                        size_hint_x: None                        
+                        width: 150       
+                        height: 80
+                        on_release: app.search(searchTxt, grid, scManager)
+                GridLayout:
+                    id: grid
+                    size_hint_y: None
+                    height: 100
+                    cols: 2
+                    rows: app.populate(grid, scManager)
+                            
+                
+    Screen:
+        name: 'access_Screen'
+        ScrollView:
+            BoxLayout:         
+                orientation: 'vertical'            
+                spacing: 40
+                size_hint_y: None
+                height: self.minimum_height       
+                
+                Label: 
+                   # id: pwdLbl
+                    text: 'endereço ip: '  
+                    size_hint_y: None
+                    height: 80
+                TextInput:
+                   # id: pwdTxt           
+                    text: "localhost"
+                    size_hint_y: None    
+                    size_hint_x: .8
+                    pos_hint: {'x' : 0.1}
+                    height: 80
+                Button:
+                    border: 0,0,0,0
+                    text: 'Conectar'
+                    size_hint_y: None
+                    size_hint_x: None
+                    pos_hint: {'center_x': .5}
+                    width: 150       
+                    height: 80
+                    on_release: app.connect(pwdTxt,scManager)
+    
+    Screen:
+        name: 'error_Screen'
+        Label:
+            text: 'Algo deu errado...\n'              
+            height: 200
+        Button:
+            border: 0,0,0,0
+            text: 'Voltar'
+            size_hint_y: None
+            size_hint_x: None
+            pos_hint: {'center_x': .5}
+            width: 150       
+            height: 60
+            on_release: app.back(scManager)
